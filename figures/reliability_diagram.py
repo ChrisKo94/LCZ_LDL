@@ -1,13 +1,20 @@
-import numpy as np
 import h5py
+import yaml
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
+from pathlib import Path
 
-import model
+from utils import model
 
 from utils.reliability_diagram import *
+
+with open("configs/model_settings.yaml", 'r') as fp:
+    setting_dict = yaml.load(fp, Loader=yaml.FullLoader)
+
+distributional = False
+
+## Set path ##
+path = os.getcwd()
+path_data = Path(path, "data")
 
 ## Import data + limit to urban classes ##
 
@@ -23,9 +30,17 @@ y_test = y_test[indices_test]
 
 model = model.sen2LCZ_drop(depth=17, dropRate=0.2, fusion=1, num_classes=10)
 
+## Exemplary run (as shown in paper)
+if distributional:
+    res_ckpt_filepath = Path(path, "results", "Sen2LCZ_bs_64_lr_0.002_seed_1234_d_weights_best.hdf5")
+else:
+    res_ckpt_filepath = Path(path, "results", "Sen2LCZ_bs_64_lr_0.002_seed_1234_weights_best.hdf5")
+
 model.load_weights(res_ckpt_filepath, by_name=False)
 
 ## Predict + save predictions ##
+
+batchSize = setting_dict["Data"]["train_batch_size"]
 
 y_pre_prob = model.predict(x_test, batch_size = batchSize)
 
@@ -34,35 +49,14 @@ pred_labels = (np.argmax(y_pre_prob, axis=1) + 1)
 confidence = y_pre_prob[np.arange(y_pre_prob.shape[0]), (pred_labels - 1).tolist()]
 prob_of_true_label = y_pre_prob[np.arange(y_pre_prob.shape[0]), (true_labels -1).tolist()]
 
-test_mat = pd.DataFrame({'true_class': true_labels, 'predicted_class': pred_labels,
-                         'confidence': confidence, 'probability_of_true_class': prob_of_true_label})
+reliability_results = pd.DataFrame({'true_class': true_labels, 'predicted_class': pred_labels,
+                                   'confidence': confidence, 'probability_of_true_class': prob_of_true_label})
 
-
-## Voting Confusion ##
-
-## Confusion Matrix ##
-
-if distributional:
-    conf_mat = confusion_matrix(entropies_results["true_class"],
-                                entropies_results["predicted_class"], normalize="true")
-else:
-    conf_mat = confusion_matrix(entropies_results["label"],
-                                entropies_results["prediction"], normalize="true")
-
-if urban:
-    labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-else:
-    labels=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "A", "B", "C", "D", "E", "F", "G"]
-
-conf_mat = pd.DataFrame(conf_mat, index=labels, columns=labels)
-heat = sns.heatmap(conf_mat * 100, annot=True, fmt = ".0f", cmap="summer")
-plt.xlabel('Predicted Class', fontsize = 15)
-plt.ylabel('Majority Vote', fontsize = 15)
 
 ## Reliability Diagram ##
 
 y_true = reliability_results.true_class
-y_pred = reliability_results.predicted_class
+y_pred = reliability_results.pred_labels
 y_conf = reliability_results.confidence
 
 # Override matplotlib default styling.

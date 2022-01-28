@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import h5py
@@ -5,9 +7,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import entropy
 
+## Set path ##
+path = os.getcwd()
+
 ## Data generation ##
 
+distr_urban_h5 = h5py.File(Path(path, "data", "label_distr_urban.h5"), 'r')
+distr_urban = np.array(distr_urban_h5.get("label_distr_urban"))
+
 entropies_urban = entropy(distr_urban, axis=1)
+
+distr_nonurban_h5 = h5py.File(Path(path, "data", "label_distr_nonurban.h5"), 'r')
+distr_nonurban = np.array(distr_nonurban_h5.get("label_distr_nonurban"))
 
 entropies_nonurban = entropy(distr_nonurban, axis=1)
 

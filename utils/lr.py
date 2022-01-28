@@ -1,5 +1,5 @@
 import numpy as np
-from keras.callbacks import LearningRateScheduler
+from tensorflow.keras.callbacks import LearningRateScheduler
 
 def step_decay_schedule(initial_lr=1e-3, decay_factor=0.75, step_size=2):
     '''
