@@ -55,7 +55,7 @@ All configs: `python evaluation.py`
 
 ## Temperature Scaling
 
-All configs: `python evaluation.py `
+All configs: `python temp_scaling.py `
 
 ---
 
