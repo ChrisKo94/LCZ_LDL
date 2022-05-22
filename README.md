@@ -2,26 +2,29 @@
 
 ---
 
-This anonymous repository accompanies the ICML 2022 submission "Going Beyond One-Hot Encoding: 
+This anonymous repository accompanies the NeurIPS 2022 submission "Going Beyond One-Hot Encoding: 
 Can Human Uncertainty Improve Model Performance?". The experiments are based on the So2Sat LCZ42 data set [1], 
 which includes aerial satellite images of cities around the world from the Sentinel satellite mission. 
 Every satellite image is linked to either a single Local Climate Zone (LCZ) class (original data set), or has a 
 corresponding vector of label votes from multiple human annotators (future release). 
 The original data set can be downloaded at https://mediatum.ub.tum.de/1454690 (and referenced pages therein). 
 In our work we study a particular subset of the So2Sat LCZ42 data set, which yields information about the labeling 
-process and has not yet been published. This is however planned for the near future and will be most likely published
-via the same stream as the original data set. 
+process and has not yet been published. This is however planned for the near future and will be published
+via the same stream as the original data set. An early access to the data for reviewing purposes has been installed 
+(see supplementary material). 
 The individual python executable files are structured as follows: 
 
 - train.py: Training script, saves results to 'results' folder
 - evaluation.py: Evaluation script, computes all metrics shown in paper and saves results to 'results' folder
-- temp_scaling.py: Performs temperature scaling on trained model(s), saves results to 'results' folder
+- temp_scaling.py: Performs temperature scaling on trained models, saves results to 'results' folder
+- mc_dropout.py: Performs Monte Carlo Dropout on trained models, saves results to 'results' folder
 - configs: 
-  - model_settings.yaml: Stores model settings if single run is desired
+  - model_settings.yaml: Stores model settings (can be manually changed if single run is desired)
 - utils:
   - model.py: Sen2LCZ model as presented in [2]. Corresponding repository: 
 https://github.com/ChunpingQiu/benchmark-on-So2SatLCZ42-dataset-a-simple-tour
   - model_softmax.py: Adapted version of Sen2LCZ which returns logits instead of probabilities
+  - model_mc_dropout.py: Adapted version of Sen2LCZ for Monte Carlo Dropout
   - reliability_diagram.py: Code for computing calibration metrics and for visualizing model calibration 
 via reliability table, adapted from https://github.com/hollance/reliability-diagrams
   - caliibration.py: Sub-function of reliability_diagram.py 
@@ -33,8 +36,8 @@ via reliability table, adapted from https://github.com/hollance/reliability-diag
   - reliability_diagram: Diplays reliability diagrams as shown in paper
   - voting_confusion: Confusion matrix between majority vote and individual vote
 - results: Stores results in the form of model weights and model performance metrics evaluated on test set 
-- data: Stores data sets, in particular train/val/test, voting counts, entropies, label distributions, ... 
-(will be released in the near future by the original authors of [1])
+- data: Stores data sets, in particular train/val/test, voting counts, entropies, label distributions etc. Please move 
+downloaded files here. 
 
 ## Requirements
 
@@ -48,6 +51,8 @@ via reliability table, adapted from https://github.com/hollance/reliability-diag
 
 All configs: `python train.py `
 
+Single model with configs as in model_settings.yaml: `python train.py --single_run True`
+
 ## Testing
 
 ---
@@ -56,9 +61,15 @@ All configs: `python evaluation.py`
 
 ## Temperature Scaling
 
-All configs: `python evaluation.py `
+---
+
+All configs: `python temp_scaling.py `
+
+## Monte Carlo Dropout
 
 ---
+
+All configs: `python mc_dropout.py `
 
 ## Figures
 

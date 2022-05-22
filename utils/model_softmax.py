@@ -3,7 +3,7 @@
 Sen2LCZ with Logit predictions
 Reference: https://ieeexplore.ieee.org/document/9103196
 Multilevel Feature Fusion-Based CNN for Local Climate Zone Classification From Sentinel-2 Images: Benchmark Results on the So2Sat LCZ42 Dataset
-Source: https://github.com/ChunpingQiu/benchmark-on-So2SatLCZ42-dataset-a-simple-tour, , the exact architecture can be found in ./modelFig
+Source: https://github.com/ChunpingQiu/benchmark-on-So2SatLCZ42-dataset-a-simple-tour
 """
 
 from __future__ import print_function

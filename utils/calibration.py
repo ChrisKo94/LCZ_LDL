@@ -2,7 +2,7 @@
 
 import numpy as np
 
-def compute_calibration(true_labels, pred_labels, confidences, num_bins=10):
+def compute_calibration(true_labels, pred_labels, confidences, confidences_mat, num_bins=10):
     """Collects predictions into bins used to draw a reliability diagram.
     Arguments:
         true_labels: the true labels for the test examples
@@ -34,6 +34,9 @@ def compute_calibration(true_labels, pred_labels, confidences, num_bins=10):
     bin_accuracies = np.zeros(num_bins, dtype=np.float)
     bin_confidences = np.zeros(num_bins, dtype=np.float)
     bin_counts = np.zeros(num_bins, dtype=np.int)
+    bin_class_counts = np.zeros((num_bins, 10), dtype=np.int)
+    bin_class_accuracies = np.zeros((num_bins, 10), dtype=np.float)
+    bin_class_confidences = np.zeros((num_bins, 10), dtype=np.float)
 
     for b in range(num_bins):
         selected = np.where(indices == b + 1)[0]
@@ -41,13 +44,22 @@ def compute_calibration(true_labels, pred_labels, confidences, num_bins=10):
             bin_accuracies[b] = np.mean(true_labels[selected] == pred_labels[selected])
             bin_confidences[b] = np.mean(confidences[selected])
             bin_counts[b] = len(selected)
+            for k in range(10):
+                bin_class_counts[b, k] = np.sum(true_labels[selected] == k + 1)
+                if bin_class_counts[b, k] > 0:
+                    bin_class_accuracies[b, k] = np.mean((true_labels[selected] == pred_labels[selected])[true_labels[selected] == k + 1])
+                    bin_class_confidences[b, k] = np.mean(confidences_mat[selected, k][true_labels[selected] == k + 1])
 
     avg_acc = np.sum(bin_accuracies * bin_counts) / np.sum(bin_counts)
     avg_conf = np.sum(bin_confidences * bin_counts) / np.sum(bin_counts)
 
     gaps = np.abs(bin_accuracies - bin_confidences)
+
+    class_gaps = np.abs(bin_class_accuracies - bin_class_confidences)
+
     ece = np.sum(gaps * bin_counts) / np.sum(bin_counts)
     mce = np.max(gaps)
+    sce = 1/10 * np.sum(class_gaps * bin_class_counts) / np.sum(bin_class_counts)
 
     return {"accuracies": bin_accuracies,
             "confidences": bin_confidences,
@@ -56,4 +68,5 @@ def compute_calibration(true_labels, pred_labels, confidences, num_bins=10):
             "avg_accuracy": avg_acc,
             "avg_confidence": avg_conf,
             "expected_calibration_error": ece,
-            "max_calibration_error": mce}
+            "max_calibration_error": mce,
+            "static_calibration_error": sce}

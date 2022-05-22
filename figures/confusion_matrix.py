@@ -8,7 +8,7 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from pathlib import Path
 
-from utils import model
+from ./utils import model
 
 with open("configs/model_settings.yaml", 'r') as fp:
     setting_dict = yaml.load(fp, Loader=yaml.FullLoader)
@@ -22,7 +22,7 @@ path_data = Path(path, "data")
 ## Import data + limit to urban classes ##
 
 test_data = h5py.File(path_data + "test_data.h5",'r')
-x_test = np.array(test_data.get("x"))
+x_test = np.array(test_data.get("sen2"))
 y_test = np.array(test_data.get("y"))
 
 indices_test = np.where(np.where(y_test == np.amax(y_test, 0))[1] + 1 < 11)[0]

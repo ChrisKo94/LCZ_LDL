@@ -19,15 +19,12 @@ path = os.getcwd()
 
 ## Load test data ##
 
-file = Path(path,"data", "test_data.h5")
-
-test_file = Path(path,"data", "test_data.h5")
+test_file = Path(path, "data", "test_data.h5")
 test_data = h5py.File(test_file, 'r')
-x_test = np.array(test_data.get("x"))
+x_test = np.array(test_data.get("sen2"))
 y_test = np.array(test_data.get("y"))
 
-test_label_distributions_h5 = h5py.File(Path(path,"data","test_label_distributions_data.h5"), "r")
-test_label_distributions = np.array(test_label_distributions_h5.get("test_label_distributions"))
+test_label_distributions = np.array(test_data.get("y_distributional_urban"))
 
 ## Subset to urban classes (1-10) ##
 
@@ -67,7 +64,10 @@ def evaluation(res_ckpt_filepath):
     ce_distr = float(cce(test_label_distributions, y_pre_prob).cpu().numpy())
     ce_one_hot = float(cce(y_test, y_pre_prob).cpu().numpy())
 
-    ece = compute_calibration(y_testV,y_pre,confidence,num_bins=20)['expected_calibration_error']
+    ece = compute_calibration(y_testV,y_pre,confidence,y_pre_prob,num_bins=setting_dict["Calibration"]["n_bins"])['expected_calibration_error']
+    mce = compute_calibration(y_testV,y_pre,confidence,y_pre_prob,num_bins=setting_dict["Calibration"]["n_bins"])['max_calibration_error']
+    sce = compute_calibration(y_testV,y_pre,confidence,y_pre_prob,num_bins=setting_dict["Calibration"]["n_bins"])['static_calibration_error']
+
     # Store results
     res = {
         'oa': float(oa),
@@ -76,7 +76,9 @@ def evaluation(res_ckpt_filepath):
         'kappa': float(cohKappa),
         'ce_one_hot': ce_one_hot,
         'ce_distr': ce_distr,
-        'ece': ece
+        'ece': ece,
+        'mce': mce,
+        'sce': sce
     }
     # Create results file
     output_path_res = Path(res_ckpt_filepath.parent, f"{res_ckpt_filepath.stem}_results.json")

@@ -1,15 +1,15 @@
-import argparse
 import os
 import h5py
+import argparse
 import numpy as np
 import yaml
 import random as rn
-import argparse
 from numpy import random
 from pathlib import Path
 
 from utils.dataLoader import generator
 from utils import lr
+from utils.model import *
 
 import tensorflow as tf
 from tensorflow.keras.optimizers import Nadam
@@ -22,18 +22,18 @@ gpu = tf.config.experimental.list_physical_devices('GPU')
 # tf.config.experimental.set_memory_growth(gpu[0], True)
 
 ## Set path ##
-path = os.getcwd()
-#path = "D:/Data/LCZ_Votes/"
+#path = os.getcwd()
+path = "E:/Dateien/LCZ_Votes/"
 
 ## Import data ##
 train_file = Path(path,"data", "train_data.h5")
 train_data = h5py.File(train_file, 'r')
-x_train = np.array(train_data.get("x"))
+x_train = np.array(train_data.get("sen2"))
 y_train = np.array(train_data.get("y"))
 
 validation_file = Path(path,"data", "validation_data.h5")
 validation_data = h5py.File(validation_file, 'r')
-x_val = np.array(validation_data.get("x"))
+x_val = np.array(validation_data.get("sen2"))
 y_val = np.array(validation_data.get("y"))
 
 ## Subset to urban classes (1-10) ##
@@ -46,24 +46,20 @@ indices_val = np.where(np.where(y_val == np.amax(y_val, 0))[1] + 1 < 11)[0]
 x_val = x_val[indices_val, :, :, :]
 y_val = y_val[indices_val]
 
-## If label distributions are used, load from different source (only urban samples included)
+## Load label distributions
 
-train_distributions_file = Path(path,"data", "train_label_distributions_data.h5")
-train_distributions = h5py.File(train_distributions_file, 'r')
-y_train_d = np.array(train_distributions['train_label_distributions'])
+y_train_d = np.array(train_data.get('y_distributional_urban'))
 
-val_distributions_file = Path(path,"data", "val_label_distributions_data.h5")
-val_distributions = h5py.File(val_distributions_file, 'r')
-y_val_d = np.array(val_distributions['val_label_distributions'])
+y_val_d = np.array(validation_data.get('y_distributional_urban'))
 
 
 ## Def model training ##
 
-def train_model(setting_dict: dict, single_run):
-    from utils import model
+def train_model(setting_dict: dict):
     seed = setting_dict["Seed"]
     label_smoothing = setting_dict["Calibration"]['label_smoothing']
     smoothing_param = setting_dict["Calibration"]['smoothing_param']
+    path = os.getcwd()
 
     ## Reproducibility
     random.seed(seed)
@@ -72,7 +68,7 @@ def train_model(setting_dict: dict, single_run):
     os.environ['PYTHONHASHSEED'] = '0'
 
     ## Model settings
-    model = model.sen2LCZ_drop(depth=17,
+    model = sen2LCZ_drop(depth=17,
                                dropRate=setting_dict["Data"]["dropout"],
                                fusion=setting_dict["Data"]["fusion"],
                                num_classes=setting_dict["Data"]["num_classes"])
@@ -83,12 +79,8 @@ def train_model(setting_dict: dict, single_run):
                       loss='KLDivergence',
                       metrics=['KLDivergence'])
     else:
-        if label_smoothing:
-            loss = CategoricalCrossentropy(label_smoothing=smoothing_param)
-        else:
-            loss = CategoricalCrossentropy()
         model.compile(optimizer=Nadam(),
-                      loss=loss,
+                      loss=CategoricalCrossentropy(),
                       metrics=['accuracy'])
     print("Model compiled")
 
@@ -97,7 +89,7 @@ def train_model(setting_dict: dict, single_run):
     batchSize = setting_dict["Data"]["train_batch_size"]
     lrate = setting_dict["Optimization"]["lr"]
 
-    lr_sched = lr.step_decay_schedule(initial_lr=2e-4,
+    lr_sched = lr.step_decay_schedule(initial_lr=lrate,
                                       decay_factor=0.5,
                                       step_size=5)
 
@@ -169,16 +161,25 @@ def train_model(setting_dict: dict, single_run):
 with open("configs/model_settings.yaml", 'r') as fp:
     setting_dict = yaml.load(fp, Loader=yaml.FullLoader)
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--single_run', type=bool, required=False, default = False)
+args = parser.parse_args()
+
 ## Train models ##
 
 if __name__ == "__main__":
-    for distributional in [False, True]:
-        for label_smoothing in [True, False]:
-            for seed in range(5):
-                setting_dict["Seed"] = seed
-                setting_dict["Calibration"]['label_smoothing'] = label_smoothing
-                setting_dict["Data"]["distributional"] = distributional
-                smoothing_param = setting_dict["Calibration"]['smoothing_param']
-                train_model(setting_dict)
+    if args.single_run:
+        smoothing_param = setting_dict["Calibration"]['smoothing_param']
+        distributional = setting_dict["Data"]["distributional"]
+        train_model(setting_dict)
+    else:
+        for distributional in [False, True]:
+            for label_smoothing in [True, False]:
+                for seed in range(5):
+                    setting_dict["Seed"] = seed
+                    setting_dict["Calibration"]['label_smoothing'] = label_smoothing
+                    setting_dict["Data"]["distributional"] = distributional
+                    smoothing_param = setting_dict["Calibration"]['smoothing_param']
+                    train_model(setting_dict)
 
 

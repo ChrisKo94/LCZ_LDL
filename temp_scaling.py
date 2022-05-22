@@ -16,7 +16,7 @@ path = os.getcwd()
 
 validation_file = Path(path,"data", "validation_data.h5")
 validation_data = h5py.File(validation_file, 'r')
-x_val = np.array(validation_data.get("x"))
+x_val = np.array(validation_data.get("sen2"))
 y_val = np.array(validation_data.get("y"))
 
 ## Subset to urban classes (1-10) ##
@@ -25,21 +25,18 @@ indices_val = np.where(np.where(y_val == np.amax(y_val, 0))[1] + 1 < 11)[0]
 x_val = x_val[indices_val, :, :, :]
 y_val = y_val[indices_val,:10]
 
-## If label distributions are used, load from different source (only urban samples included)
+## Load label distributions
 
-val_distributions_file = Path(path,"data", "val_label_distributions_data.h5")
-val_distributions = h5py.File(val_distributions_file, 'r')
-y_val_d = np.array(val_distributions['val_label_distributions'])
+y_val_d = np.array(validation_data.get('y_distributional_urban'))
 
 ## Load test data ##
 
-test_file = Path(path,"data", "test_data.h5")
+test_file = Path(path, "data", "test_data.h5")
 test_data = h5py.File(test_file, 'r')
-x_test = np.array(test_data.get("x"))
+x_test = np.array(test_data.get("sen2"))
 y_test = np.array(test_data.get("y"))
 
-test_label_distributions_h5 = h5py.File(Path(path,"data","test_label_distributions_data.h5"), "r")
-y_test_d = np.array(test_label_distributions_h5.get("test_label_distributions"))
+y_test_d = np.array(test_data.get("y_distributional_urban"))
 
 ## Subset to urban classes (1-10) ##
 
@@ -94,6 +91,7 @@ def temp_scaler(res_ckpt_filepath):
     # Derive predictions + corr. confidence
     y_pre = y_pred_prob.argmax(axis=-1) + 1
     confidence = y_pred_prob[np.arange(y_pred_prob.shape[0]), (y_pre - 1).tolist()]
+    y_testV = y_test.argmax(axis=-1) + 1
     # Compute cross-entropies and ece
     ce_one_hot = float(tf.reduce_mean(
         tf.nn.softmax_cross_entropy_with_logits(tf.convert_to_tensor(y_test),
@@ -102,12 +100,17 @@ def temp_scaler(res_ckpt_filepath):
         tf.nn.softmax_cross_entropy_with_logits(tf.convert_to_tensor(y_test_d),
                                                 y_pred_model_w_temp)).cpu().numpy())
 
-    ece = compute_calibration(y_test, y_pred_prob, confidence, num_bins=20)['expected_calibration_error']
+    ece = compute_calibration(y_testV, y_pre, confidence, y_pred_prob, num_bins=25)['expected_calibration_error']
+    mce = compute_calibration(y_testV, y_pre, confidence, y_pred_prob, num_bins=25)['max_calibration_error']
+    sce = compute_calibration(y_testV, y_pre, confidence, y_pred_prob, num_bins=25)['static_calibration_error']
+
     # Store results
     res = {
         'ce_one_hot': ce_one_hot,
         'ce_distr': ce_distr,
-        'ece': ece
+        'ece': ece,
+        'mce': mce,
+        'sce': sce
     }
     # Create results file
     output_path_res = Path(res_ckpt_filepath.parent, f"{res_ckpt_filepath.stem}_results_ts.json")
