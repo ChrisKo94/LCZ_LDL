@@ -26,12 +26,12 @@ gpu = tf.config.experimental.list_physical_devices('GPU')
 path = "E:/Dateien/LCZ_Votes/"
 
 ## Import data ##
-train_file = Path(path,"data", "train_data.h5")
+train_file = Path(path,"data", "training.h5")
 train_data = h5py.File(train_file, 'r')
 x_train = np.array(train_data.get("sen2"))
 y_train = np.array(train_data.get("y"))
 
-validation_file = Path(path,"data", "validation_data.h5")
+validation_file = Path(path,"data", "validation.h5")
 validation_data = h5py.File(validation_file, 'r')
 x_val = np.array(validation_data.get("sen2"))
 y_val = np.array(validation_data.get("y"))

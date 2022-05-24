@@ -21,7 +21,7 @@ path_data = Path(path, "data")
 
 ## Import data + limit to urban classes ##
 
-test_data = h5py.File(path_data + "test_data.h5",'r')
+test_data = h5py.File(path_data + "testing.h5",'r')
 x_test = np.array(test_data.get("sen2"))
 y_test = np.array(test_data.get("y"))
 

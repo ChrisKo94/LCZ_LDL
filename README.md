@@ -34,7 +34,6 @@ via reliability table, adapted from https://github.com/hollance/reliability-diag
   - confusion_matrix: Diplays confusion matrices as shown in paper
   - entropy_barplot: Grouped barplot of voting entropies
   - reliability_diagram: Diplays reliability diagrams as shown in paper
-  - voting_confusion: Confusion matrix between majority vote and individual vote
 - results: Stores results in the form of model weights and model performance metrics evaluated on test set 
 - data: Stores data sets, in particular train/val/test, voting counts, entropies, label distributions etc. Please move 
 downloaded files here. 
