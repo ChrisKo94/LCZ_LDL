@@ -6,12 +6,9 @@ This anonymous repository accompanies the NeurIPS 2022 submission "Going Beyond 
 Can Human Uncertainty Improve Model Performance?". The experiments are based on the So2Sat LCZ42 data set [1], 
 which includes aerial satellite images of cities around the world from the Sentinel satellite mission. 
 Every satellite image is linked to either a single Local Climate Zone (LCZ) class (original data set), or has a 
-corresponding vector of label votes from multiple human annotators (future release). 
-The original data set can be downloaded at https://mediatum.ub.tum.de/1454690 (and referenced pages therein). 
-In our work we study a particular subset of the So2Sat LCZ42 data set, which yields information about the labeling 
-process and has not yet been published. This is however planned for the near future and will be published
-via the same stream as the original data set. An early access to the data for reviewing purposes has been installed 
-(see supplementary material). 
+corresponding vector of label votes from multiple human annotators (label evaluation study). 
+In our work we study label evaluation data the So2Sat LCZ42 data set, which yields information about the labeling 
+process. The data download for reviewing purposes can be found in the supplementary material. 
 The individual python executable files are structured as follows: 
 
 - train.py: Training script, saves results to 'results' folder
@@ -27,7 +24,7 @@ https://github.com/ChunpingQiu/benchmark-on-So2SatLCZ42-dataset-a-simple-tour
   - model_mc_dropout.py: Adapted version of Sen2LCZ for Monte Carlo Dropout
   - reliability_diagram.py: Code for computing calibration metrics and for visualizing model calibration 
 via reliability table, adapted from https://github.com/hollance/reliability-diagrams
-  - caliibration.py: Sub-function of reliability_diagram.py 
+  - calibration.py: Sub-function of reliability_diagram.py 
   - dataLoader.py: Custom data loader
   - lr.py: Custom learning rate scheduler
 - figures:
@@ -42,7 +39,9 @@ downloaded files here.
 
 ---
 
-`pip install -U -r requirements.txt`
+`conda create -y --name lczenv python=3.8`
+
+`conda install --file requirements.txt`
 
 ## Training
 

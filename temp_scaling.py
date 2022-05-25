@@ -11,6 +11,8 @@ from utils.calibration import compute_calibration
 
 ## Set path ##
 path = os.getcwd()
+results_dir = Path(path, 'results')
+results_dir.mkdir(parents=True, exist_ok=True)
 
 ## Import data ##
 

@@ -22,8 +22,9 @@ gpu = tf.config.experimental.list_physical_devices('GPU')
 # tf.config.experimental.set_memory_growth(gpu[0], True)
 
 ## Set path ##
-#path = os.getcwd()
-path = "E:/Dateien/LCZ_Votes/"
+path = os.getcwd()
+results_dir = Path(path, 'results')
+results_dir.mkdir(parents=True, exist_ok=True)
 
 ## Import data ##
 train_file = Path(path,"data", "training.h5")

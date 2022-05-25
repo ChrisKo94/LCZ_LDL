@@ -14,6 +14,8 @@ from utils.reliability_diagram import *
 import tensorflow as tf
 
 path = os.getcwd()
+results_dir = Path(path, 'results')
+results_dir.mkdir(parents=True, exist_ok=True)
 
 ## Import data + limit to urban classes ##
 

@@ -16,6 +16,8 @@ import tensorflow as tf
 
 ## Set path ##
 path = os.getcwd()
+results_dir = Path(path, 'results')
+results_dir.mkdir(parents=True, exist_ok=True)
 
 ## Load test data ##
 

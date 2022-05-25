@@ -1,4 +1,6 @@
+import sys
 import os
+sys.path.insert(0, os.getcwd())
 from pathlib import Path
 import numpy as np
 import pandas as pd
