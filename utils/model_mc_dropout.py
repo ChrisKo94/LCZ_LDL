@@ -7,10 +7,9 @@ Source: https://github.com/ChunpingQiu/benchmark-on-So2SatLCZ42-dataset-a-simple
 """
 
 from __future__ import print_function
-from tensorflow import keras
-from keras.layers import *
-from keras.regularizers import l2
-from keras.models import Model
+from tensorflow.keras.layers import *
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.models import Model
 import numpy as np
 
 
