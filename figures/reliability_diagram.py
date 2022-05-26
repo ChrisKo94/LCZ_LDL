@@ -22,8 +22,8 @@ path_data = Path(path, "data")
 ## Import data + limit to urban classes ##
 
 test_data = test_data = h5py.File(Path(path_data, "testing.h5"),'r')
-x_test = np.array(test_data.get("x"))
-y_test = np.array(test_data.get("sen2"))
+x_test = np.array(test_data.get("sen2"))
+y_test = np.array(test_data.get("y"))
 
 indices_test = np.where(np.where(y_test == np.amax(y_test, 0))[1] + 1 < 11)[0]
 x_test = x_test[indices_test, :, :, :]
