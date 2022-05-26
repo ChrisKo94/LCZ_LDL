@@ -59,7 +59,7 @@ reliability_results = pd.DataFrame({'true_class': true_labels, 'predicted_class'
 ## Reliability Diagram ##
 
 y_true = reliability_results.true_class
-y_pred = reliability_results.pred_labels
+y_pred = reliability_results.predicted_class
 y_conf = reliability_results.confidence
 
 # Override matplotlib default styling.
