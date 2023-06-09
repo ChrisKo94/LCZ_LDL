@@ -14,10 +14,12 @@ from utils.reliability_diagram import *
 import tensorflow as tf
 
 path = os.getcwd()
+results_dir = Path(path, 'results')
+results_dir.mkdir(parents=True, exist_ok=True)
 
 ## Import data + limit to urban classes ##
 
-test_data = h5py.File(Path(path,"data","test_data.h5"),'r')
+test_data = h5py.File(Path(path,"data","testing.h5"),'r')
 x_test = np.array(test_data.get("sen2"))
 y_test = np.array(test_data.get("y"))
 
@@ -31,6 +33,9 @@ test_label_distributions = np.array(test_data.get("y_distributional_urban"))
 
 with open("configs/model_settings.yaml", 'r') as fp:
     setting_dict = yaml.load(fp, Loader=yaml.FullLoader)
+
+## Save results to dataframe
+results = pd.DataFrame()
 
 def evaluation(res_ckpt_filepath):
 
@@ -92,7 +97,7 @@ def evaluation(res_ckpt_filepath):
     return res
 
 for label_smoothing in [False]:
-    for seed in range(4):
+    for seed in range(5):
         # Set hyperparameters accordingly
         setting_dict["Seed"] = seed
         smoothing_param = setting_dict["Calibration"]['smoothing_param']
@@ -107,10 +112,9 @@ for label_smoothing in [False]:
                                      f"Sen2LCZ_bs_{batchSize}_lr_{lrate}_seed_{seed}_weights_best.hdf5")
         # Start evaluation
         res = evaluation(res_ckpt_filepath)
-        results = pd.read_csv(Path(path, "results", "0.002_results_mc.csv"), sep=",", index_col = 0)
         # Store results in overall results matrix
         results = results.append(res, ignore_index=True)
 
-        # Write ALL results to disk
-        results.to_csv(Path(path,"results","0.002_results_mc.csv"))
+# Write ALL results to disk
+results.to_csv(Path(path,"results","0.002_results_mc.csv"))
 

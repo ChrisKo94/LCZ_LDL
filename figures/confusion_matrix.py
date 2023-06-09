@@ -1,14 +1,15 @@
 import numpy as np
 import h5py
-import os
 import yaml
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from pathlib import Path
-
-from ./utils import model
+import sys
+import os
+sys.path.insert(0, os.getcwd())
+from utils import model
 
 with open("configs/model_settings.yaml", 'r') as fp:
     setting_dict = yaml.load(fp, Loader=yaml.FullLoader)
@@ -21,7 +22,7 @@ path_data = Path(path, "data")
 
 ## Import data + limit to urban classes ##
 
-test_data = h5py.File(path_data + "test_data.h5",'r')
+test_data = test_data = h5py.File(Path(path_data, "testing.h5"),'r')
 x_test = np.array(test_data.get("sen2"))
 y_test = np.array(test_data.get("y"))
 

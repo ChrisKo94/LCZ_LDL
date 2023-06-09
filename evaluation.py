@@ -16,10 +16,12 @@ import tensorflow as tf
 
 ## Set path ##
 path = os.getcwd()
+results_dir = Path(path, 'results')
+results_dir.mkdir(parents=True, exist_ok=True)
 
 ## Load test data ##
 
-test_file = Path(path, "data", "test_data.h5")
+test_file = Path(path, "data", "testing.h5")
 test_data = h5py.File(test_file, 'r')
 x_test = np.array(test_data.get("sen2"))
 y_test = np.array(test_data.get("y"))

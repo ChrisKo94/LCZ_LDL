@@ -3,6 +3,9 @@ import yaml
 import pandas as pd
 from pathlib import Path
 
+import sys
+import os
+sys.path.insert(0, os.getcwd())
 from utils import model
 
 from utils.reliability_diagram import *
@@ -10,7 +13,7 @@ from utils.reliability_diagram import *
 with open("configs/model_settings.yaml", 'r') as fp:
     setting_dict = yaml.load(fp, Loader=yaml.FullLoader)
 
-distributional = False
+distributional = False # change accordingly
 
 ## Set path ##
 path = os.getcwd()
@@ -18,9 +21,9 @@ path_data = Path(path, "data")
 
 ## Import data + limit to urban classes ##
 
-test_data = h5py.File(path_data + "test_data.h5",'r')
-x_test = np.array(test_data.get("x"))
-y_test = np.array(test_data.get("sen2"))
+test_data = test_data = h5py.File(Path(path_data, "testing.h5"),'r')
+x_test = np.array(test_data.get("sen2"))
+y_test = np.array(test_data.get("y"))
 
 indices_test = np.where(np.where(y_test == np.amax(y_test, 0))[1] + 1 < 11)[0]
 x_test = x_test[indices_test, :, :, :]
@@ -56,7 +59,7 @@ reliability_results = pd.DataFrame({'true_class': true_labels, 'predicted_class'
 ## Reliability Diagram ##
 
 y_true = reliability_results.true_class
-y_pred = reliability_results.pred_labels
+y_pred = reliability_results.predicted_class
 y_conf = reliability_results.confidence
 
 # Override matplotlib default styling.
