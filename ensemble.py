@@ -83,7 +83,6 @@ if __name__ == "__main__":
                                      f"Sen2LCZ_bs_{batchSize}_lr_{lrate}_seed_{seed}_weights_best.hdf5")
             prob, conf = evaluation(res_ckpt_filepath)
 
-            # ToDo: Aggregate and average probs & confidences
             prob = prob[..., np.newaxis]
             conf = conf[..., np.newaxis]
 
