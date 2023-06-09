@@ -15,6 +15,7 @@ The individual python executable files are structured as follows:
 - evaluation.py: Evaluation script, computes all metrics shown in paper and saves results to 'results' folder
 - temp_scaling.py: Performs temperature scaling on trained models, saves results to 'results' folder
 - mc_dropout.py: Performs Monte Carlo Dropout on trained models, saves results to 'results' folder
+- ensemble.py: Performs Ensemble method on trained models, saves results to 'results' folder
 - configs: 
   - model_settings.yaml: Stores model settings (can be manually changed if single run is desired)
 - utils:
@@ -68,6 +69,12 @@ All configs: `python temp_scaling.py `
 ---
 
 All configs: `python mc_dropout.py `
+
+## Ensemble Method
+
+---
+
+All configs: `python ensemble.py `
 
 ## Figures
 
