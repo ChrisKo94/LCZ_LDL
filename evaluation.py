@@ -98,7 +98,7 @@ def evaluation(res_ckpt_filepath):
 with open("configs/model_settings.yaml", 'r') as fp:
     setting_dict = yaml.load(fp, Loader=yaml.FullLoader)
 
-## Train models ##
+## Evaluate models ##
 
 if __name__ == "__main__":
     for distributional in [False, True]:
