@@ -2,8 +2,8 @@
 
 ---
 
-This anonymous repository accompanies the NeurIPS 2022 submission "Going Beyond One-Hot Encoding: 
-Can Human Uncertainty Improve Model Performance?". The experiments are based on the So2Sat LCZ42 data set [1], 
+This repository accompanies the TGRS publication "Going Beyond One-Hot Encoding: 
+Can Human Uncertainty Improve Model Performance in Earth Observation?". The experiments are based on the So2Sat LCZ42 data set [1], 
 which includes aerial satellite images of cities around the world from the Sentinel satellite mission. 
 Every satellite image is linked to either a single Local Climate Zone (LCZ) class (original data set), or has a 
 corresponding vector of label votes from multiple human annotators (label evaluation study). 
