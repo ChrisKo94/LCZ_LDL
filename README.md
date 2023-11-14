@@ -1,4 +1,4 @@
-# Local Climate Zones Label Distribution Learning (LCZ_LDL)
+# Local Climate Zones Label Distribution Learning (LCZ-LDL)
 
 ---
 
@@ -8,7 +8,9 @@ which includes aerial satellite images of cities around the world from the Senti
 Every satellite image is linked to either a single Local Climate Zone (LCZ) class (original data set), or has a 
 corresponding vector of label votes from multiple human annotators (label evaluation study). 
 In our work we study label evaluation data the So2Sat LCZ42 data set, which yields information about the labeling 
-process. The data download for reviewing purposes can be found in the supplementary material. 
+process. The studied dataset can be downloaded here: https://mediatum.ub.tum.de/1659039 (Direkt download, rscync and FTP available). Please copy the downloaded data into the pre-existing data folder (see details below)
+. 
+
 The individual python executable files are structured as follows: 
 
 - train.py: Training script, saves results to 'results' folder
